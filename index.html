@@ -14,23 +14,23 @@
 
 <body>
     <div class="container columns-1 mx-auto">
-        <header class="header" id="header">
+        <header class="header bg-red-500" id="header">
             <h1 class="header">Weather Dashboard</h1>
         </header>
     </div>
 
     <div class="grid grid-cols-7 gap-4">
-        <form class="col-span-2">
+        <form class="col-span-2 bg-blue-500" id="search-form">
             <label for="searchCity">Search for a City:</label>
-            <input type="text" id="searchCity" name="searchCity">
+            <input type="text" id="search-city" name="searchCity">
             <input type="submit" value="Search">
         </form>
 
-        <section class="col-span-5" id="forecast"></section>
+        <section class="col-span-5 bg-yellow-500" id="forecast"></section>
 
-        <div class="col-span-2" id="searchHistory"></div>
+        <div class="col-span-2 bg-purple-500" id="searchHistory"></div>
 
-        <div class="col-span-5" id="fiveDay"></div>
+        <div class="col-span-5 bg-green-500" id="fiveDay"></div>
     </div>
 
 
