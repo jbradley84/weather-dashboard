@@ -5,16 +5,35 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+        integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="./assets/css/style.css">
     <title>Weather Dashboard</title>
 </head>
 
 <body>
-    <div class="container">
-        <header class="header row" id="header">
-            <h1 class="header col-12">Weather Dashboard</h1>
+    <div class="container columns-1 mx-auto">
+        <header class="header" id="header">
+            <h1 class="header">Weather Dashboard</h1>
         </header>
     </div>
+
+    <div class="grid grid-cols-7 gap-4">
+        <form class="col-span-2">
+            <label for="searchCity">Search for a City:</label>
+            <input type="text" id="searchCity" name="searchCity">
+            <input type="submit" value="Search">
+        </form>
+
+        <section class="col-span-5" id="forecast"></section>
+
+        <div class="col-span-2" id="searchHistory"></div>
+
+        <div class="col-span-5" id="fiveDay"></div>
+    </div>
+
+
 
     <script src="./assets/js/script.js"></script>
 </body>
