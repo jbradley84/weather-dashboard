@@ -1,5 +1,7 @@
 searchFormEl = document.querySelector("#search-form");
 cityInputEl = document.querySelector("#search-city");
+forecastTodayEl = document.querySelector("#forecast");
+fiveDayEl = document.querySelector("#fiveDay");
 
 var formSubmitHandler = function(event) {
     event.preventDefault();
@@ -77,6 +79,34 @@ var displayWeather = function(cityName, data) {
     var pUvIndexEl = document.createElement("p");
     pUvIndexEl.textContent = "UV Index: " + data.current.uvi;
     sectionEl.appendChild(pUvIndexEl);
+}
+
+var displayFiveDay = function(data) {
+
+    var fiveDayContainer = document.createElement("div");
+    fiveDayContainer.classList.add("w-full", "flex");
+    fiveDayEl.appendChild(fiveDayContainer);
+
+    var fiveDayLoop = data.daily.slice(0, 5);
+    // loop through daily forecast array
+    for (let i = 0; i< fiveDayLoop.length; i++) {
+        // create five-day forecast cards
+        var forecastCard = document.createElement("article");
+        forecastCard.classList.add("flex-1", "p-4", "bg-green-100", "rounded", "overflow-hidden", "shadow-xl");
+        fiveDayContainer.appendChild(forecastCard);
+
+        var fiveTemp = document.createElement("p");
+        fiveTemp.textContent = fiveDayLoop[i].temp.day + "\u00B0 F";
+        forecastCard.appendChild(fiveTemp);
+
+        var fiveWind = document.createElement("p");
+        fiveWind.textContent = fiveDayLoop[i].wind_speed + " MPH";
+        forecastCard.appendChild(fiveWind);
+
+        var fiveHumidity = document.createElement("p");
+        fiveHumidity.textContent = fiveDayLoop[i].humidity + "%";
+        forecastCard.appendChild(fiveHumidity);
+    }
 }
 
 searchFormEl.addEventListener("submit", formSubmitHandler);
