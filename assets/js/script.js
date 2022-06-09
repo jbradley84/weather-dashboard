@@ -16,7 +16,7 @@ var savedCityBtn = function () {
             var savedObject = localStorage.getItem([i]).replaceAll('"', "");
             // create the city button by index value
             var citySearchBtn = document.createElement("button");
-            citySearchBtn.classList.add("w-full");
+            citySearchBtn.classList.add("w-full", "bg-gray-300", "rounded", "py-1", "hover:bg-gray-500");
             citySearchBtn.setAttribute("id", savedObject);
             citySearchBtn.textContent = savedObject;
             cityBtnEl.appendChild(citySearchBtn);
@@ -88,7 +88,7 @@ var getWeather = function (latEl, lonEl, cityName) {
 // function to save searched city name to localStorage
 var saveSearch = function (cityName) {
     searchHistory = cityName
-    //if (typeof searchIdCounter === "undefined") {
+    
     if (searchIdCounter === "undefined") {
         searchIdCounter = 0;
     } else {
@@ -105,7 +105,7 @@ var saveSearch = function (cityName) {
 // function to add new city button after search
 var addNewCityBtn = function (cityName) {
     var citySearchBtn = document.createElement("button");
-    citySearchBtn.classList.add("w-full");
+    citySearchBtn.classList.add("w-full", "w-full", "bg-gray-300", "rounded", "py-1", "hover:bg-gray-500");
     citySearchBtn.setAttribute("id", cityName);
     citySearchBtn.textContent = cityName;
     cityBtnEl.appendChild(citySearchBtn);
@@ -121,79 +121,72 @@ var resubmitSearch = function (event) {
 
 // function to display current weather in selected city
 var displayWeather = function (data, cityName) {
-    console.log(data);
+    forecastTodayEl.innerHTML = "";
     // create container for current weather display
     var sectionEl = document.createElement("section");
     forecastTodayEl.appendChild(sectionEl);
-
     // create div element to flex city/date/img
     var weatherGlance = document.createElement("div");
-    weatherGlance.classList.add("flex");
+    weatherGlance.classList.add("flex", "space-x-2");
     sectionEl.appendChild(weatherGlance);
-
     // create h2 "city" element to append to sectionEl
     var h2CityEl = document.createElement("h2");
+    h2CityEl.classList.add("text-2xl", "font-semibold");
     h2CityEl.textContent = cityName;
     weatherGlance.appendChild(h2CityEl);
 
     var todaysDate = document.createElement("h2");
     // convert unix timestamp into milliseconds
     var timestamp = data.current.dt * 1000;
+
     // create date object
     date = new Date(timestamp);
-    todaysDate.textContent = date.toLocaleString("en-US", {month: "numeric", day: "numeric", year: "numeric"});
+    todaysDate.textContent = date.toLocaleString("en-US", { month: "numeric", day: "numeric", year: "numeric" });
+    todaysDate.classList.add("text-2xl", "font-semibold");
     weatherGlance.appendChild(todaysDate);
-
     var iconUrl = "http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png";
     var currentWeatherIcon = document.createElement("img");
     currentWeatherIcon.setAttribute("src", iconUrl);
+    currentWeatherIcon.classList.add();
     weatherGlance.appendChild(currentWeatherIcon);
-    
 
     // create p elements to append to sectionEl
     var pTempEl = document.createElement("p");
     pTempEl.textContent = "Temp: " + data.current.temp + "\u00B0 F";
-    sectionEl.appendChild(pTempEl);
-
     var pWindEl = document.createElement("p");
     pWindEl.textContent = "Wind: " + data.current.wind_speed + " MPH";
-    sectionEl.appendChild(pWindEl);
-
     var pHumidityEl = document.createElement("p");
     pHumidityEl.textContent = "Humidity: " + data.current.humidity + "%";
-    sectionEl.appendChild(pHumidityEl);
-
-
     // create div element to flex pUvIndexEl and uviColor together
     var uviGlance = document.createElement("div");
-    uviGlance.classList.add("flex");
-    sectionEl.appendChild(uviGlance);
+    uviGlance.classList.add("flex", "space-x-1");
+
+    // append temp,wind,humidity,uvi to sectionEl
+    sectionEl.append(pTempEl, pWindEl, pHumidityEl, uviGlance);
 
     var pUvIndexEl = document.createElement("p");
     pUvIndexEl.textContent = "UV Index:";
     uviGlance.appendChild(pUvIndexEl);
-
     var uviColor = document.createElement("p");
     uviColor.textContent = data.current.uvi;
     if (data.current.uvi <= "2") {
-        uviColor.classList.add("bg-green-400");
+        uviColor.classList.add("bg-green-400", "px-1");
     } else if (data.current.uvi <= "5") {
-        uviColor.classList.add("bg-yellow-400");
+        uviColor.classList.add("bg-yellow-400", "px-1");
     } else if (data.current.uvi <= "7") {
-        uviColor.classList.add("bg-orange-400");
+        uviColor.classList.add("bg-orange-400", "px-1");
     } else {
-        uviColor.classList.add("bg-red-400");
+        uviColor.classList.add("bg-red-400", "px-1");
     }
-    uviGlance.appendChild(uviColor);   
+    uviGlance.appendChild(uviColor);
 }
-
 
 
 // function to display 5-day forecast of selected city
 var displayFiveDay = function (data) {
-
+fiveDayEl.innerHTML = "";
     var fiveDayContainer = document.createElement("div");
-    fiveDayContainer.classList.add("w-full", "flex", "-mx-4");
+    fiveDayContainer.classList.add("w-full", "flex", "space-x-4");
     fiveDayEl.appendChild(fiveDayContainer);
 
     var fiveDayLoop = data.daily.slice(1, 6);
@@ -201,7 +194,7 @@ var displayFiveDay = function (data) {
     for (let i = 0; i < fiveDayLoop.length; i++) {
         // create five-day forecast cards
         var forecastCard = document.createElement("article");
-        forecastCard.classList.add("flex-1", "mb-4", "px-4", "bg-green-500", "max-w-sm", "rounded", "overflow-hidden", "shadow-lg");
+        forecastCard.classList.add("flex-1", "p-2", "bg-blue-800", "rounded", "overflow-hidden", "shadow-xl");
         fiveDayContainer.appendChild(forecastCard);
 
         // create p elements to append to forecastCard
@@ -210,26 +203,27 @@ var displayFiveDay = function (data) {
         var timestamp = fiveDayLoop[i].dt * 1000;
         // create date object
         date = new Date(timestamp);
-        fiveDate.textContent = date.toLocaleString("en-US", {month: "numeric", day: "numeric", year: "numeric"});
-        forecastCard.appendChild(fiveDate);
+        fiveDate.textContent = date.toLocaleString("en-US", { month: "numeric", day: "numeric", year: "numeric" });
+        fiveDate.classList.add("text-white");
 
         // create image elements to append forecastCard
         var iconUrl = "http://openweathermap.org/img/wn/" + data.daily[i].weather[0].icon + "@2x.png";
-        var currentWeatherIcon = document.createElement("img");
-        currentWeatherIcon.setAttribute("src", iconUrl);
-        forecastCard.appendChild(currentWeatherIcon);
+        var fiveIcon = document.createElement("img");
+        fiveIcon.setAttribute("src", iconUrl);
+        fiveIcon.classList.add("text-white");
 
         var fiveTemp = document.createElement("p");
-        fiveTemp.textContent = fiveDayLoop[i].temp.day + "\u00B0 F";
-        forecastCard.appendChild(fiveTemp);
+        fiveTemp.textContent = "Temp: " + fiveDayLoop[i].temp.day + "\u00B0 F";
+        fiveTemp.classList.add("text-white")
 
         var fiveWind = document.createElement("p");
-        fiveWind.textContent = fiveDayLoop[i].wind_speed + " MPH";
-        forecastCard.appendChild(fiveWind);
+        fiveWind.textContent = "Wind: " + fiveDayLoop[i].wind_speed + " MPH";
+        fiveWind.classList.add("text-white");
 
         var fiveHumidity = document.createElement("p");
-        fiveHumidity.textContent = fiveDayLoop[i].humidity + "%";
-        forecastCard.appendChild(fiveHumidity);
+        fiveHumidity.textContent = "Humidity: " + fiveDayLoop[i].humidity + "%";
+        fiveHumidity.classList.add("text-white");
+        forecastCard.append(fiveDate, fiveIcon, fiveTemp, fiveWind, fiveHumidity);
     }
 
 }
