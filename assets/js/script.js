@@ -163,10 +163,28 @@ var displayWeather = function (data, cityName) {
     pHumidityEl.textContent = "Humidity: " + data.current.humidity + "%";
     sectionEl.appendChild(pHumidityEl);
 
+
+    // create div element to flex pUvIndexEl and uviColor together
+    var uviGlance = document.createElement("div");
+    uviGlance.classList.add("flex");
+    sectionEl.appendChild(uviGlance);
+
     var pUvIndexEl = document.createElement("p");
-    pUvIndexEl.textContent = "UV Index: " + data.current.uvi;
-    // <2 = green, 3 - 5 = yellow, 6 - 7 = orange, 8+ = red
-    sectionEl.appendChild(pUvIndexEl);
+    pUvIndexEl.textContent = "UV Index:";
+    uviGlance.appendChild(pUvIndexEl);
+
+    var uviColor = document.createElement("p");
+    uviColor.textContent = data.current.uvi;
+    if (data.current.uvi <= "2") {
+        uviColor.classList.add("bg-green-400");
+    } else if (data.current.uvi <= "5") {
+        uviColor.classList.add("bg-yellow-400");
+    } else if (data.current.uvi <= "7") {
+        uviColor.classList.add("bg-orange-400");
+    } else {
+        uviColor.classList.add("bg-red-400");
+    }
+    uviGlance.appendChild(uviColor);   
 }
 
 
