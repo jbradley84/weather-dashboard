@@ -126,13 +126,29 @@ var displayWeather = function (data, cityName) {
     var sectionEl = document.createElement("section");
     forecastTodayEl.appendChild(sectionEl);
 
-    // create h2 element to append to sectionEl
-    var h2El = document.createElement("h2");
+    // create div element to flex city/date/img
+    var weatherGlance = document.createElement("div");
+    weatherGlance.classList.add("flex");
+    sectionEl.appendChild(weatherGlance);
+
+    // create h2 "city" element to append to sectionEl
+    var h2CityEl = document.createElement("h2");
+    h2CityEl.textContent = cityName;
+    weatherGlance.appendChild(h2CityEl);
+
+    var todaysDate = document.createElement("h2");
+    // convert unix timestamp into milliseconds
+    var timestamp = data.current.dt * 1000;
+    // create date object
+    date = new Date(timestamp);
+    todaysDate.textContent = date.toLocaleString("en-US", {month: "numeric", day: "numeric", year: "numeric"});
+    weatherGlance.appendChild(todaysDate);
+
     var iconUrl = "http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png";
     var currentWeatherIcon = document.createElement("img");
     currentWeatherIcon.setAttribute("src", iconUrl);
-    h2El.textContent = cityName + currentWeatherIcon;
-    sectionEl.appendChild(h2El);
+    weatherGlance.appendChild(currentWeatherIcon);
+    
 
     // create p elements to append to sectionEl
     var pTempEl = document.createElement("p");
