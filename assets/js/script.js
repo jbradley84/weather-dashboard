@@ -65,19 +65,20 @@ var getWeatherInfo = function (location) {
 }
 
 
-var saveSearch = function (cityName, oneCallUrl) {
+var saveSearch = function (cityName) {
     // create an object out of cityName and oneCallUrl
-    searchHistory = {
-        city: cityName,
-        api: oneCallUrl
-    };
-    if (typeof searchIdCounter === "undefined") {
+    searchHistory = cityName
+    
+    //if (typeof searchIdCounter === "undefined") {
+    if (searchIdCounter === "undefined") {
         searchIdCounter = 0;
+    } else {
+        searchIdCounter = localStorage.length;
     }
     
-
     // add searchHistory object to localStorage with key of searchIdCounter
-    localStorage.setItem(searchIdCounter, JSON.stringify(searchHistory.city));
+    localStorage.setItem(searchIdCounter, JSON.stringify(searchHistory));
+    
     // increment searchIdCounter
     searchIdCounter++;
     //console.log(localStorage);
@@ -87,26 +88,17 @@ var saveSearch = function (cityName, oneCallUrl) {
 var generateBtn = function () {
     // if cityName is generated in getWeatherInfo, create a button
     if (localStorage) {
-        //console.log(localStorage);
         // loop through localStorage and create a button for each key/value pair
         for (let i = 0; i < localStorage.length; i++) {
-            var key = i;
-            var savedObject = localStorage.getItem(key)
-            console.log(savedObject);
-            //console.log(savedObject.city);
-            //var citySearchBtn = document.createElement("button");
+            var savedObject = localStorage.getItem([i]).replaceAll('"', "");
+            //console.log(savedObject);
             
-            //btnText = JSON.parse(localStorage.getItem([i].city));
-            //console.log(btnText);
-            //citySearchBtn.textContent = btnText;
-            //cityBtnEl.appendChild(citySearchBtn);
+            var citySearchBtn = document.createElement("button");
+            citySearchBtn.classList.add("w-full");
+            citySearchBtn.textContent = savedObject;
+            cityBtnEl.appendChild(citySearchBtn);
         }
-
-        
-        //citySearchBtn.textContent = cityName;
-        //cityBtnEl.appendChild(citySearchBtn);
     }
-
 }
 
 
