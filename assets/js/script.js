@@ -195,6 +195,12 @@ var displayFiveDay = function (data) {
         fiveDate.textContent = date.toLocaleString("en-US", {month: "numeric", day: "numeric", year: "numeric"});
         forecastCard.appendChild(fiveDate);
 
+        // create image elements to append forecastCard
+        var iconUrl = "http://openweathermap.org/img/wn/" + data.daily[i].weather[0].icon + "@2x.png";
+        var currentWeatherIcon = document.createElement("img");
+        currentWeatherIcon.setAttribute("src", iconUrl);
+        forecastCard.appendChild(currentWeatherIcon);
+
         var fiveTemp = document.createElement("p");
         fiveTemp.textContent = fiveDayLoop[i].temp.day + "\u00B0 F";
         forecastCard.appendChild(fiveTemp);
