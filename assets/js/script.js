@@ -1,28 +1,9 @@
-searchFormEl = document.querySelector("#search-form");
-cityInputEl = document.querySelector("#search-city");
-cityBtnEl = document.querySelector("#searchHistory");
-forecastTodayEl = document.querySelector("#forecast");
-fiveDayEl = document.querySelector("#fiveDay");
-
+var searchFormEl = document.querySelector("#search-form");
+var cityInputEl = document.querySelector("#search-city");
+var cityBtnEl = document.querySelector("#searchHistory");
+var forecastTodayEl = document.querySelector("#forecast");
+var fiveDayEl = document.querySelector("#fiveDay");
 var searchIdCounter;
-
-
-// function to dynamically create city buttons based on localStorage data 
-var savedCityBtn = function () {
-    // if localStorage has data, do this
-    if (localStorage) {
-        // loop through localStorage and create a button for each key/value pair
-        for (let i = 0; i < localStorage.length; i++) {
-            var savedObject = localStorage.getItem([i]).replaceAll('"', "");
-            // create the city button by index value
-            var citySearchBtn = document.createElement("button");
-            citySearchBtn.classList.add("w-full", "bg-gray-300", "rounded", "py-1", "hover:bg-gray-500");
-            citySearchBtn.setAttribute("id", savedObject);
-            citySearchBtn.textContent = savedObject;
-            cityBtnEl.appendChild(citySearchBtn);
-        }
-    }
-}
 
 
 // function to take form search input and feed it into getLatLon 
@@ -78,6 +59,7 @@ var getWeather = function (latEl, lonEl, cityName) {
             response.json().then(function (data) {
                 displayWeather(data, cityName);
                 displayFiveDay(data);
+                // need this to not run if button already exists
                 addNewCityBtn(cityName);
             })
         }
@@ -85,10 +67,123 @@ var getWeather = function (latEl, lonEl, cityName) {
 }
 
 
+// function to display current weather in selected city
+var displayWeather = function (data, cityName) {
+    forecastTodayEl.innerHTML = "";
+    // create container for current weather display
+    var sectionEl = document.createElement("section");
+    forecastTodayEl.appendChild(sectionEl);
+    // create div element to flex city/date/img
+    var weatherGlance = document.createElement("div");
+    weatherGlance.classList.add("flex", "space-x-2", "content-end");
+    sectionEl.appendChild(weatherGlance);
+    // create h2 "city" element to append to sectionEl
+    var h2CityEl = document.createElement("h2");
+    h2CityEl.classList.add("text-3xl", "font-semibold", "h-20", "pt-10");
+    h2CityEl.textContent = cityName;
+    weatherGlance.appendChild(h2CityEl);
+
+    var todaysDate = document.createElement("h2");
+    // convert unix timestamp into milliseconds
+    var timestamp = data.current.dt * 1000
+    // create date object
+    date = new Date(timestamp);
+    todaysDate.textContent = date.toLocaleString("en-US", { month: "numeric", day: "numeric", year: "numeric"});
+    todaysDate.classList.add("text-3xl", "font-semibold", "h-20", "pt-10");
+    weatherGlance.appendChild(todaysDate);
+
+    var iconUrl = "http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png";
+    var currentWeatherIcon = document.createElement("img");
+    currentWeatherIcon.setAttribute("src", iconUrl);
+    currentWeatherIcon.classList.add("h-20");
+    weatherGlance.appendChild(currentWeatherIcon);
+
+    // create p elements to append to sectionEl
+    var pTempEl = document.createElement("p");
+    pTempEl.textContent = "Temp: " + data.current.temp + "\u00B0 F";
+    pTempEl.classList.add("text-lg", "font-semibold", "py-1");
+    var pWindEl = document.createElement("p");
+    pWindEl.textContent = "Wind: " + data.current.wind_speed + " MPH";
+    pWindEl.classList.add("text-lg", "font-semibold", "py-1");
+    var pHumidityEl = document.createElement("p");
+    pHumidityEl.textContent = "Humidity: " + data.current.humidity + "%";
+    pHumidityEl.classList.add("text-lg", "font-semibold", "py-1");
+    // create div element to flex pUvIndexEl and uviColor together
+    var uviGlance = document.createElement("div");
+    uviGlance.classList.add("flex", "space-x-1", "text-lg", "font-semibold", "py-1");
+
+    // append temp,wind,humidity,uvi to sectionEl
+    sectionEl.append(pTempEl, pWindEl, pHumidityEl, uviGlance);
+
+    var pUvIndexEl = document.createElement("p");
+    pUvIndexEl.textContent = "UV Index:";
+    uviGlance.appendChild(pUvIndexEl);
+    var uviColor = document.createElement("p");
+    uviColor.textContent = data.current.uvi;
+    if (data.current.uvi <= "2") {
+        uviColor.classList.add("bg-green-400", "px-1", "rounded", "text-center", "w-10");
+    } else if (data.current.uvi <= "5") {
+        uviColor.classList.add("bg-yellow-400", "px-1", "rounded", "text-center", "w-10");
+    } else if (data.current.uvi <= "7") {
+        uviColor.classList.add("bg-orange-400", "px-1", "rounded", "text-center", "w-10");
+    } else {
+        uviColor.classList.add("bg-red-400", "px-1", "rounded", "text-center", "w-10");
+    }
+    uviGlance.appendChild(uviColor);
+}
+
+
+// function to display 5-day forecast of selected city
+var displayFiveDay = function (data) {
+    fiveDayEl.innerHTML = "";
+    var fiveDayContainer = document.createElement("div");
+    fiveDayContainer.classList.add("w-full", "flex", "space-x-4");
+    fiveDayEl.appendChild(fiveDayContainer);
+
+    var fiveDayLoop = data.daily.slice(1, 6);
+    // loop through daily forecast array
+    for (let i = 0; i < fiveDayLoop.length; i++) {
+        // create five-day forecast cards
+        var forecastCard = document.createElement("article");
+        forecastCard.classList.add("flex-1", "p-2", "bg-blue-400", "rounded", "shadow-xl");
+        fiveDayContainer.appendChild(forecastCard);
+
+        // create p elements to append to forecastCard
+        var fiveDate = document.createElement("h4");
+        // convert unix timestamp into milliseconds
+        var timestamp = fiveDayLoop[i].dt * 1000;
+        // create date object
+        date = new Date(timestamp);
+        fiveDate.textContent = date.toLocaleString("en-US", { month: "numeric", day: "numeric", year: "numeric" });
+        fiveDate.classList.add("text-white", "text-md", "font-medium");
+
+        // create image elements to append forecastCard
+        var iconUrl = "http://openweathermap.org/img/wn/" + data.daily[i].weather[0].icon + "@2x.png";
+        var fiveIcon = document.createElement("img");
+        fiveIcon.setAttribute("src", iconUrl);
+        fiveIcon.classList.add("text-white", "text-md", "font-medium");
+
+        var fiveTemp = document.createElement("p");
+        fiveTemp.textContent = "Temp: " + fiveDayLoop[i].temp.day + "\u00B0 F";
+        fiveTemp.classList.add("text-white", "text-md", "font-medium")
+
+        var fiveWind = document.createElement("p");
+        fiveWind.textContent = "Wind: " + fiveDayLoop[i].wind_speed + " MPH";
+        fiveWind.classList.add("text-white", "text-md", "font-medium");
+
+        var fiveHumidity = document.createElement("p");
+        fiveHumidity.textContent = "Humidity: " + fiveDayLoop[i].humidity + "%";
+        fiveHumidity.classList.add("text-white", "text-md", "font-medium");
+        forecastCard.append(fiveDate, fiveIcon, fiveTemp, fiveWind, fiveHumidity);
+    }
+
+}
+
+
 // function to save searched city name to localStorage
 var saveSearch = function (cityName) {
     searchHistory = cityName
-    
+
     if (searchIdCounter === "undefined") {
         searchIdCounter = 0;
     } else {
@@ -102,10 +197,28 @@ var saveSearch = function (cityName) {
 }
 
 
+// function to dynamically create city buttons based on localStorage data 
+var savedCityBtn = function () {
+    // if localStorage has data, do this
+    if (localStorage) {
+        // loop through localStorage and create a button for each key/value pair
+        for (let i = 0; i < localStorage.length; i++) {
+            var savedObject = localStorage.getItem([i]).replaceAll('"', "");
+            // create the city button by index value
+            var citySearchBtn = document.createElement("button");
+            citySearchBtn.classList.add("w-full", "font-semibold", "bg-gray-300", "rounded", "h-9", "py-1", "hover:bg-gray-400", "shadow-md");
+            citySearchBtn.setAttribute("id", savedObject);
+            citySearchBtn.textContent = savedObject;
+            cityBtnEl.appendChild(citySearchBtn);
+        }
+    }
+}
+
+
 // function to add new city button after search
 var addNewCityBtn = function (cityName) {
     var citySearchBtn = document.createElement("button");
-    citySearchBtn.classList.add("w-full", "w-full", "bg-gray-300", "rounded", "py-1", "hover:bg-gray-500");
+    citySearchBtn.classList.add("w-full", "font-semibold", "bg-gray-300", "rounded", "py-1", "hover:bg-gray-400", "shadow-md");
     citySearchBtn.setAttribute("id", cityName);
     citySearchBtn.textContent = cityName;
     cityBtnEl.appendChild(citySearchBtn);
@@ -118,117 +231,9 @@ var resubmitSearch = function (event) {
     getLatLon(event.target.id);
 }
 
-
-// function to display current weather in selected city
-var displayWeather = function (data, cityName) {
-    forecastTodayEl.innerHTML = "";
-    // create container for current weather display
-    var sectionEl = document.createElement("section");
-    forecastTodayEl.appendChild(sectionEl);
-    // create div element to flex city/date/img
-    var weatherGlance = document.createElement("div");
-    weatherGlance.classList.add("flex", "space-x-2");
-    sectionEl.appendChild(weatherGlance);
-    // create h2 "city" element to append to sectionEl
-    var h2CityEl = document.createElement("h2");
-    h2CityEl.classList.add("text-2xl", "font-semibold");
-    h2CityEl.textContent = cityName;
-    weatherGlance.appendChild(h2CityEl);
-
-    var todaysDate = document.createElement("h2");
-    // convert unix timestamp into milliseconds
-    var timestamp = data.current.dt * 1000;
-
-    // create date object
-    date = new Date(timestamp);
-    todaysDate.textContent = date.toLocaleString("en-US", { month: "numeric", day: "numeric", year: "numeric" });
-    todaysDate.classList.add("text-2xl", "font-semibold");
-    weatherGlance.appendChild(todaysDate);
-    var iconUrl = "http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png";
-    var currentWeatherIcon = document.createElement("img");
-    currentWeatherIcon.setAttribute("src", iconUrl);
-    currentWeatherIcon.classList.add();
-    weatherGlance.appendChild(currentWeatherIcon);
-
-    // create p elements to append to sectionEl
-    var pTempEl = document.createElement("p");
-    pTempEl.textContent = "Temp: " + data.current.temp + "\u00B0 F";
-    var pWindEl = document.createElement("p");
-    pWindEl.textContent = "Wind: " + data.current.wind_speed + " MPH";
-    var pHumidityEl = document.createElement("p");
-    pHumidityEl.textContent = "Humidity: " + data.current.humidity + "%";
-    // create div element to flex pUvIndexEl and uviColor together
-    var uviGlance = document.createElement("div");
-    uviGlance.classList.add("flex", "space-x-1");
-
-    // append temp,wind,humidity,uvi to sectionEl
-    sectionEl.append(pTempEl, pWindEl, pHumidityEl, uviGlance);
-
-    var pUvIndexEl = document.createElement("p");
-    pUvIndexEl.textContent = "UV Index:";
-    uviGlance.appendChild(pUvIndexEl);
-    var uviColor = document.createElement("p");
-    uviColor.textContent = data.current.uvi;
-    if (data.current.uvi <= "2") {
-        uviColor.classList.add("bg-green-400", "px-1");
-    } else if (data.current.uvi <= "5") {
-        uviColor.classList.add("bg-yellow-400", "px-1");
-    } else if (data.current.uvi <= "7") {
-        uviColor.classList.add("bg-orange-400", "px-1");
-    } else {
-        uviColor.classList.add("bg-red-400", "px-1");
-    }
-    uviGlance.appendChild(uviColor);
-}
-
-
-// function to display 5-day forecast of selected city
-var displayFiveDay = function (data) {
-fiveDayEl.innerHTML = "";
-    var fiveDayContainer = document.createElement("div");
-    fiveDayContainer.classList.add("w-full", "flex", "space-x-4");
-    fiveDayEl.appendChild(fiveDayContainer);
-
-    var fiveDayLoop = data.daily.slice(1, 6);
-    // loop through daily forecast array
-    for (let i = 0; i < fiveDayLoop.length; i++) {
-        // create five-day forecast cards
-        var forecastCard = document.createElement("article");
-        forecastCard.classList.add("flex-1", "p-2", "bg-blue-800", "rounded", "overflow-hidden", "shadow-xl");
-        fiveDayContainer.appendChild(forecastCard);
-
-        // create p elements to append to forecastCard
-        var fiveDate = document.createElement("h4");
-        // convert unix timestamp into milliseconds
-        var timestamp = fiveDayLoop[i].dt * 1000;
-        // create date object
-        date = new Date(timestamp);
-        fiveDate.textContent = date.toLocaleString("en-US", { month: "numeric", day: "numeric", year: "numeric" });
-        fiveDate.classList.add("text-white");
-
-        // create image elements to append forecastCard
-        var iconUrl = "http://openweathermap.org/img/wn/" + data.daily[i].weather[0].icon + "@2x.png";
-        var fiveIcon = document.createElement("img");
-        fiveIcon.setAttribute("src", iconUrl);
-        fiveIcon.classList.add("text-white");
-
-        var fiveTemp = document.createElement("p");
-        fiveTemp.textContent = "Temp: " + fiveDayLoop[i].temp.day + "\u00B0 F";
-        fiveTemp.classList.add("text-white")
-
-        var fiveWind = document.createElement("p");
-        fiveWind.textContent = "Wind: " + fiveDayLoop[i].wind_speed + " MPH";
-        fiveWind.classList.add("text-white");
-
-        var fiveHumidity = document.createElement("p");
-        fiveHumidity.textContent = "Humidity: " + fiveDayLoop[i].humidity + "%";
-        fiveHumidity.classList.add("text-white");
-        forecastCard.append(fiveDate, fiveIcon, fiveTemp, fiveWind, fiveHumidity);
-    }
-
-}
-
+// run function savedCityBtn on page load
 savedCityBtn();
 
+// event listeners
 searchFormEl.addEventListener("submit", formSubmitHandler);
 cityBtnEl.addEventListener("click", resubmitSearch);
