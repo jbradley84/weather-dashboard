@@ -16,8 +16,6 @@ var formSubmitHandler = function (event) {
         getLatLon(city);
         // clear old content
         cityInputEl.value = "";
-
-
         // if search button clicked with no input, alert user
     } else {
         alert("Please enter city name to search.");
@@ -73,16 +71,19 @@ var displayWeather = function (data, cityName) {
     // create container for current weather display
     var sectionEl = document.createElement("section");
     forecastTodayEl.appendChild(sectionEl);
+
     // create div element to flex city/date/img
     var weatherGlance = document.createElement("div");
     weatherGlance.classList.add("flex", "space-x-2", "content-end");
     sectionEl.appendChild(weatherGlance);
-    // create h2 "city" element to append to sectionEl
+
+    // city in weatherGlance
     var h2CityEl = document.createElement("h2");
     h2CityEl.classList.add("text-3xl", "font-semibold", "h-20", "pt-10");
     h2CityEl.textContent = cityName;
     weatherGlance.appendChild(h2CityEl);
 
+    // date in weatherGlance
     var todaysDate = document.createElement("h2");
     // convert unix timestamp into milliseconds
     var timestamp = data.current.dt * 1000
@@ -92,6 +93,7 @@ var displayWeather = function (data, cityName) {
     todaysDate.classList.add("text-3xl", "font-semibold", "h-20", "pt-10");
     weatherGlance.appendChild(todaysDate);
 
+    // icon in weatherGlance
     var iconUrl = "http://openweathermap.org/img/wn/" + data.current.weather[0].icon + "@2x.png";
     var currentWeatherIcon = document.createElement("img");
     currentWeatherIcon.setAttribute("src", iconUrl);
@@ -111,7 +113,6 @@ var displayWeather = function (data, cityName) {
     // create div element to flex pUvIndexEl and uviColor together
     var uviGlance = document.createElement("div");
     uviGlance.classList.add("flex", "space-x-1", "text-lg", "font-semibold", "py-1");
-
     // append temp,wind,humidity,uvi to sectionEl
     sectionEl.append(pTempEl, pWindEl, pHumidityEl, uviGlance);
 
@@ -121,13 +122,13 @@ var displayWeather = function (data, cityName) {
     var uviColor = document.createElement("p");
     uviColor.textContent = data.current.uvi;
     if (data.current.uvi <= "2") {
-        uviColor.classList.add("bg-green-400", "px-1", "rounded", "text-center", "w-10");
+        uviColor.classList.add("bg-green-400", "px-1", "rounded", "text-center", "w-12");
     } else if (data.current.uvi <= "5") {
-        uviColor.classList.add("bg-yellow-400", "px-1", "rounded", "text-center", "w-10");
+        uviColor.classList.add("bg-yellow-400", "px-1", "rounded", "text-center", "w-12");
     } else if (data.current.uvi <= "7") {
-        uviColor.classList.add("bg-orange-400", "px-1", "rounded", "text-center", "w-10");
+        uviColor.classList.add("bg-orange-400", "px-1", "rounded", "text-center", "w-12");
     } else {
-        uviColor.classList.add("bg-red-400", "px-1", "rounded", "text-center", "w-10");
+        uviColor.classList.add("bg-red-400", "px-1", "rounded", "text-center", "w-12");
     }
     uviGlance.appendChild(uviColor);
 }
