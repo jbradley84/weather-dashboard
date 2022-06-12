@@ -34,8 +34,11 @@ var getLatLon = function (location) {
             response.json().then(function (data) {
                 // create variable based on value of input (aka city name)
                 var cityName = data.name;
-                // save searched value to localStorage
-                saveSearch(cityName);
+                // save searched value to localStorage if button of equal value does not exist
+                var btnId = document.getElementById(cityName)
+                if (!btnId) {
+                    saveSearch(cityName);
+                }
                 // create variable for latitude and longitude
                 var latEl = data.coord.lat;
                 var lonEl = data.coord.lon;
@@ -57,13 +60,11 @@ var getWeather = function (latEl, lonEl, cityName) {
             response.json().then(function (data) {
                 displayWeather(data, cityName);
                 displayFiveDay(data);
-                // need this to not run if button already exists
-               var btnId=document.getElementById(cityName)
-               if(!btnId){
-                addNewCityBtn(cityName)}
-                /*else {
-                    alert('this city has been searched already')
-                };*/
+                // create new city button if button of equal value does not exist
+                var btnId = document.getElementById(cityName)
+                if (!btnId) {
+                    addNewCityBtn(cityName)
+                }
             })
         }
     })
@@ -94,7 +95,7 @@ var displayWeather = function (data, cityName) {
     var timestamp = data.current.dt * 1000
     // create date object
     date = new Date(timestamp);
-    todaysDate.textContent = date.toLocaleString("en-US", { month: "numeric", day: "numeric", year: "numeric"});
+    todaysDate.textContent = date.toLocaleString("en-US", { month: "numeric", day: "numeric", year: "numeric" });
     todaysDate.classList.add("text-3xl", "font-semibold", "h-20", "pt-10");
     weatherGlance.appendChild(todaysDate);
 
