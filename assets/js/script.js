@@ -58,7 +58,12 @@ var getWeather = function (latEl, lonEl, cityName) {
                 displayWeather(data, cityName);
                 displayFiveDay(data);
                 // need this to not run if button already exists
-                addNewCityBtn(cityName);
+               var btnId=document.getElementById(cityName)
+               if(!btnId){
+                addNewCityBtn(cityName)}
+                /*else {
+                    alert('this city has been searched already')
+                };*/
             })
         }
     })
@@ -204,7 +209,8 @@ var savedCityBtn = function () {
     if (localStorage) {
         // loop through localStorage and create a button for each key/value pair
         for (let i = 0; i < localStorage.length; i++) {
-            var savedObject = localStorage.getItem([i]).replaceAll('"', "");
+            var savedObject = JSON.parse(localStorage.getItem([i]))
+            console.log('savedObjet', savedObject)
             // create the city button by index value
             var citySearchBtn = document.createElement("button");
             citySearchBtn.classList.add("w-full", "font-semibold", "bg-gray-300", "rounded", "h-9", "py-1", "hover:bg-gray-400", "shadow-md");
