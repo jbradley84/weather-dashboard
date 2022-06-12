@@ -11,7 +11,6 @@
 * JS
 * Tailwind
 * OpenWeather Weather API
-* jQuery
 
 ## Website
 https://jbradley84.github.io/weather-dashboard/
